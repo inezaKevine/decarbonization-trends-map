@@ -35,20 +35,26 @@ export class ApiError extends Error {
 /**
  * Fetch the dashboard dataset.
  *
- * The backend is on Render's free tier, which spins the instance down when
- * idle; the first request after a cold start can take the better part of a
- * minute, so the timeout is deliberately generous.
+ * Called from the browser, never during the build: the backend runs on
+ * Render's free tier and spins down when idle, so a build-time fetch would
+ * tie every deploy to whether the API happens to be awake. The cold start
+ * can take the better part of a minute, hence the generous timeout.
+ *
+ * `signal` lets the caller abort in-flight work (a React effect cleanup)
+ * without racing the timeout.
  */
 export async function fetchDataset(
-  { revalidate = 3600, timeoutMs = 60_000 } = {},
+  { timeoutMs = 90_000, signal }: { timeoutMs?: number; signal?: AbortSignal } = {},
 ): Promise<Dataset> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
 
+  const onAbort = () => controller.abort()
+  signal?.addEventListener("abort", onAbort)
+
   try {
     const response = await fetch(apiUrl("/dataset"), {
       signal: controller.signal,
-      next: { revalidate },
     })
 
     if (!response.ok) {
@@ -62,6 +68,9 @@ export async function fetchDataset(
   } catch (error) {
     if (error instanceof ApiError) throw error
 
+    // A caller-driven abort is not a failure worth reporting.
+    if (signal?.aborted) throw error
+
     if (error instanceof Error && error.name === "AbortError") {
       throw new ApiError(
         `The API did not respond within ${Math.round(timeoutMs / 1000)}s.`,
@@ -73,5 +82,6 @@ export async function fetchDataset(
     )
   } finally {
     clearTimeout(timer)
+    signal?.removeEventListener("abort", onAbort)
   }
 }
