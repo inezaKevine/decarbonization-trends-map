@@ -99,9 +99,19 @@ export function Dashboard() {
               onSelect={setSelectedIso}
             />
 
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Info className="size-3.5" />
-              Click any country on the map to select it.
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Info className="size-3.5" />
+                Click any country to select it.
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="size-2.5 rounded-sm border-2 border-foreground" />
+                Selected
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="size-2.5 rounded-sm border border-foreground" />
+                Similar path
+              </span>
             </div>
           </section>
 
