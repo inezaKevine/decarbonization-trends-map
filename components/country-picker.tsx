@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Search, ChevronDown } from "lucide-react"
-import { countries, clusterColor } from "@/lib/decarb-data"
+import { useDecarbData } from "@/lib/decarb-data"
 
 export function CountryPicker({
   value,
@@ -11,6 +11,7 @@ export function CountryPicker({
   value: string
   onChange: (iso: string) => void
 }) {
+  const { countries, clusterColor } = useDecarbData()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -22,7 +23,7 @@ export function CountryPicker({
     const q = query.trim().toLowerCase()
     if (!q) return countries
     return countries.filter((c) => c.country.toLowerCase().includes(q))
-  }, [query])
+  }, [query, countries])
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {

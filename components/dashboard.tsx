@@ -2,13 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { Map as MapIcon, Flame, Info } from "lucide-react"
-import {
-  countryByIso,
-  clusterById,
-  clusterColor,
-  maxYear,
-  dataSource,
-} from "@/lib/decarb-data"
+import { dataSource, useDecarbData } from "@/lib/decarb-data"
 import { CountryPicker } from "./country-picker"
 import { YearSlider } from "./year-slider"
 import { WorldMap } from "./world-map"
@@ -19,19 +13,26 @@ import { ClusterLegend } from "./cluster-legend"
 type ColorMode = "cluster" | "emissions"
 
 export function Dashboard() {
+  const { countries, years, countryByIso, clusterById, clusterColor, maxYear, yearIndex } =
+    useDecarbData()
+
   const [selectedIso, setSelectedIso] = useState("USA")
   const [year, setYear] = useState(maxYear)
   const [colorMode, setColorMode] = useState<ColorMode>("cluster")
   const [hoverCluster, setHoverCluster] = useState<number | null>(null)
 
-  const selected = countryByIso.get(selectedIso)!
-  const cluster = clusterById.get(selected.cluster)!
+  // The API decides which countries exist, so fall back to the first one
+  // rather than assuming the default selection is present.
+  const selected = countryByIso.get(selectedIso) ?? countries[0]
+  const cluster = clusterById.get(selected.cluster)
+
   const similarIsos = useMemo(
     () => selected.similar.map((s) => s.iso),
     [selected],
   )
 
-  const yiCurrent = year - 1990
+  // Derive the index from the year list instead of assuming it starts at 1990.
+  const yiCurrent = yearIndex(year)
   const perCapNow = selected.perCap[yiCurrent]
 
   return (
@@ -138,11 +139,11 @@ export function Dashboard() {
                 style={{ backgroundColor: clusterColor(selected.cluster) }}
               />
               <span className="text-sm font-medium text-foreground">
-                {cluster.name}
+                {cluster?.name}
               </span>
             </div>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
-              {cluster.desc}
+              {cluster?.desc}
             </p>
 
             <dl className="mt-4 grid grid-cols-2 gap-3">
@@ -157,7 +158,7 @@ export function Dashboard() {
                 unit={`t · ${selected.stats.peakYear}`}
               />
               <Stat
-                label="Change since 1990"
+                label={`Change since ${years[0]}`}
                 value={fmtPct(selected.stats.changeSince1990Pct)}
                 positive={selected.stats.changeSince1990Pct <= 0}
               />

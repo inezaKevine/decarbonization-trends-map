@@ -1,7 +1,7 @@
 "use client"
 
 import { ArrowRight } from "lucide-react"
-import { countryByIso, clusterColor, clusterById } from "@/lib/decarb-data"
+import { useDecarbData } from "@/lib/decarb-data"
 
 export function SimilarPanel({
   selectedIso,
@@ -10,6 +10,8 @@ export function SimilarPanel({
   selectedIso: string
   onSelect: (iso: string) => void
 }) {
+  const { countryByIso, clusterColor, clusterById } = useDecarbData()
+
   const selected = countryByIso.get(selectedIso)
   if (!selected) return null
 

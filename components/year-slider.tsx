@@ -1,6 +1,6 @@
 "use client"
 
-import { minYear, maxYear } from "@/lib/decarb-data"
+import { useDecarbData } from "@/lib/decarb-data"
 
 export function YearSlider({
   year,
@@ -9,6 +9,8 @@ export function YearSlider({
   year: number
   onChange: (year: number) => void
 }) {
+  const { minYear, maxYear } = useDecarbData()
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between">

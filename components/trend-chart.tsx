@@ -1,13 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import {
-  years,
-  countryByIso,
-  clusterColor,
-  minYear,
-  maxYear,
-} from "@/lib/decarb-data"
+import { useDecarbData } from "@/lib/decarb-data"
 
 const W = 720
 const H = 300
@@ -24,6 +18,7 @@ export function TrendChart({
   year: number
   onYearHover: (year: number) => void
 }) {
+  const { years, countryByIso, clusterColor, minYear, maxYear } = useDecarbData()
   const [hoverLine, setHoverLine] = useState<string | null>(null)
 
   const selected = countryByIso.get(selectedIso)
@@ -58,7 +53,7 @@ export function TrendChart({
       }
     })
     return { lines, maxVal, xScale, yScale }
-  }, [selectedIso, similarIsos])
+  }, [selectedIso, similarIsos, years, countryByIso, clusterColor])
 
   const yTicks = useMemo(() => {
     const ticks: number[] = []
@@ -72,7 +67,7 @@ export function TrendChart({
     for (let y = minYear; y <= maxYear; y += 8) out.push(y)
     if (out[out.length - 1] !== maxYear) out.push(maxYear)
     return out
-  }, [])
+  }, [minYear, maxYear])
 
   const yi = years.indexOf(year)
   const markerX = PAD.left + (yi / (years.length - 1)) * (W - PAD.left - PAD.right)

@@ -1,6 +1,6 @@
 "use client"
 
-import { clusters, clusterColor } from "@/lib/decarb-data"
+import { useDecarbData } from "@/lib/decarb-data"
 
 export function ClusterLegend({
   activeCluster,
@@ -9,6 +9,8 @@ export function ClusterLegend({
   activeCluster: number | null
   onHover: (cluster: number | null) => void
 }) {
+  const { clusters, clusterColor } = useDecarbData()
+
   return (
     <div className="flex flex-col gap-1.5">
       {clusters.map((c) => {

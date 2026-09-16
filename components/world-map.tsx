@@ -2,13 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { geoNaturalEarth1, geoPath, geoGraticule10 } from "d3-geo"
-import {
-  world,
-  countryByIso,
-  clusterColor,
-  clusterById,
-  yearIndex,
-} from "@/lib/decarb-data"
+import { world, useDecarbData } from "@/lib/decarb-data"
 
 const WIDTH = 800
 const HEIGHT = 420
@@ -51,6 +45,7 @@ export function WorldMap({
   similarIsos: string[]
   onSelect: (iso: string) => void
 }) {
+  const { countryByIso, clusterColor, clusterById, yearIndex } = useDecarbData()
   const [hoverIso, setHoverIso] = useState<string | null>(null)
 
   const { paths, graticulePath, outlinePath } = useMemo(() => {
