@@ -16,6 +16,7 @@ export function CountryPicker({
   const [query, setQuery] = useState("")
   const wrapRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   const selected = countries.find((c) => c.iso === value)
 
@@ -42,9 +43,24 @@ export function CountryPicker({
     }
   }, [open])
 
+  function closeAndRefocus() {
+    setOpen(false)
+    triggerRef.current?.focus()
+  }
+
+  function onSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Escape") {
+      closeAndRefocus()
+    } else if (e.key === "Enter" && filtered.length > 0) {
+      onChange(filtered[0].iso)
+      closeAndRefocus()
+    }
+  }
+
   return (
     <div ref={wrapRef} className="relative w-full">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-left text-sm font-medium text-card-foreground transition-colors hover:bg-accent"
@@ -73,6 +89,7 @@ export function CountryPicker({
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={onSearchKeyDown}
               placeholder="Search countries…"
               className="w-full bg-transparent text-sm text-popover-foreground outline-none placeholder:text-muted-foreground"
             />
@@ -91,7 +108,7 @@ export function CountryPicker({
                   aria-selected={c.iso === value}
                   onClick={() => {
                     onChange(c.iso)
-                    setOpen(false)
+                    closeAndRefocus()
                   }}
                   className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
                     c.iso === value

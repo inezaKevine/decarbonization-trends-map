@@ -9,6 +9,7 @@ import { WorldMap } from "./world-map"
 import { TrendChart } from "./trend-chart"
 import { SimilarPanel } from "./similar-panel"
 import { ClusterLegend } from "./cluster-legend"
+import { SectionNav } from "./section-nav"
 
 type ColorMode = "cluster" | "emissions"
 
@@ -37,14 +38,17 @@ export function Dashboard() {
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-5 px-4 py-6 md:px-8 lg:py-8">
-      <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
-            <Flame className="size-4" />
-          </span>
-          <h1 className="text-balance text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-            Decarbonisation Pathways
-          </h1>
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
+              <Flame className="size-4" />
+            </span>
+            <h1 className="text-balance text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+              Decarbonisation Pathways
+            </h1>
+          </div>
+          <SectionNav />
         </div>
         <p className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
           Explore how countries cluster by their per-capita CO₂ trajectories
